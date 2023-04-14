@@ -7,6 +7,7 @@
             [clojure.string :as str]
             [clojure.math.numeric-tower :as nt]))
 
+
 (defn add-edge-number-cases
   "Helper functions to added a new edge case with int/float data type
    @param cases-to-be-added the initial vector to add the case to
@@ -249,26 +250,14 @@
     (cond (or (= output-type-1 :integer) (= output-type-1 :float))
           (map (fn [new-output]
                  (map (fn [training-set-output]
-                        (let [training-output (getting-input-outside-the-vector training-set-output)
-                              new-new-output (getting-input-outside-the-vector new-output)]
-                          (cond
-                            (keyword? new-new-output) 1000
-                            (and (nil? training-output) (nil? new-new-output)) 0
-                            (or (nil? training-output) (nil? new-new-output)) 1000
-                            :else (nt/abs (-' training-output new-new-output)))))
-                      current-training-set-output)) 
-               new-output-seq)
+                        (Math/abs (-' (getting-input-outside-the-vector training-set-output)
+                                      (getting-input-outside-the-vector new-output)))) current-training-set-output)) new-output-seq)
 
           (= output-type-1 :boolean)
           (map (fn [new-output]
                  (map (fn [training-set-output]
-                        (let [training-output (getting-input-outside-the-vector training-set-output)
-                              new-new-output (getting-input-outside-the-vector new-output)]
-                          (if (keyword? new-new-output)
-                            1000
-                            (nt/abs (-' (if (identity training-output) 1 0)
-                                          (if (identity new-new-output) 1 0))))))
-                      current-training-set-output)) new-output-seq)
+                        (Math/abs (-' (if (getting-input-outside-the-vector training-set-output) 1 0)
+                                      (if (getting-input-outside-the-vector new-output) 1 0)))) current-training-set-output)) new-output-seq)
 
           (or (= output-type-1 :string) (= output-type-1 :output))
           (map (fn [new-output]
@@ -281,19 +270,17 @@
 
           :else
           (map (fn [new-output]
-                 (if (keyword? new-output)
-                   1000
-                   (map util/mean (map (fn [item1]
-                                         (let [item1-size (count item1)
-                                               item2-size (count new-output)
-                                               item1-set (set item1)
-                                               item2-set (set new-output)
-                                               size-difference (nt/abs (- item1-size item2-size))
-                                               result-difference (measure-output-difference item1 new-output (vector (nth output-type 1)))
-                                               num-of-distinct-elements (count (into (cset/difference item1-set item2-set)
-                                                                                     (cset/difference item2-set item1-set)))]
-                                           (conj (apply concat result-difference) num-of-distinct-elements size-difference)))
-                                       current-training-set-output))))
+                 (map util/mean (map (fn [item1]
+                                       (let [item1-size (count item1)
+                                             item2-size (count new-output)
+                                             item1-set (set item1)
+                                             item2-set (set new-output)
+                                             size-difference (Math/abs (- item1-size item2-size))
+                                             result-difference (measure-output-difference item1 new-output (vector (nth output-type 1)))
+                                             num-of-distinct-elements (count (into (cset/difference item1-set item2-set)
+                                                                                   (cset/difference item2-set item1-set)))]
+                                         (conj (apply concat result-difference) num-of-distinct-elements size-difference)))
+                                     current-training-set-output)))
                new-output-seq))))
 
 (defn get-output-types

@@ -80,8 +80,8 @@
                                                                 data-cases)]
                      (let [final-state (run-push (:program individual)
                                                  (->> (make-push-state)
-                                                      (push-item input1 :input)
-                                                      (push-item input2 :input)))
+                                                      (push-item input2 :input)
+                                                      (push-item input1 :input)))
                            result (top-item :integer final-state)]
                        (when print-outputs
                          (println (format "Correct output: %s | Program output: %s" (str correct-output) (str result))))
@@ -137,7 +137,6 @@
     (println ";;******************************"))) ; To do validation, could have this function return an altered best individual
        ; with total-error > 0 if it had error of zero on train but not on validation
        ; set. Would need a third category of data cases, or a defined split of training cases.
-
 
 ; Define the argmap
 (def argmap
